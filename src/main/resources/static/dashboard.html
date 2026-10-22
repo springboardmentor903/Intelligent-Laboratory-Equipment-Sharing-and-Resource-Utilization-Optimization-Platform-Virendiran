@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#315b47" />
+  <title>Dashboard | Lab Resource Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/workspace.css" />
+</head>
+<body class="workspace-page">
+  <header class="workspace-nav">
+    <a class="brand" href="/dashboard.html"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M12 4h8M14 4v9l-7.2 12.2A2 2 0 0 0 8.5 28h15a2 2 0 0 0 1.7-2.8L18 13V4"/><path d="M10 22h12M13 17h6"/></svg></span><span>Lab Resource<span class="brand-light"> Platform</span></span></a>
+    <div class="nav-right"><a class="nav-admin" href="/admin.html">Admin approvals</a><span class="nav-user" id="nav-user">Loading account…</span><button class="outline-button" id="logout">Sign out</button></div>
+  </header>
+  <main class="dashboard-wrap">
+    <div class="dashboard-kicker"><span></span> YOUR WORKSPACE</div>
+    <h1>Good to see you, <span id="user-name">there</span>.</h1>
+    <p class="dashboard-intro">Browse lab equipment and check current availability.</p>
+    <section class="resource-summary"><div><span class="summary-number" id="instrument-count">—</span><span class="summary-label">INSTRUMENTS IN CATALOG</span></div><div class="summary-note"><i></i> Catalog synced from PostgreSQL</div></section>
+    <section class="catalog-tools" aria-label="Filter instrument catalog"><label class="search-field"><span aria-hidden="true">⌕</span><input id="instrument-search" type="search" placeholder="Search instruments, categories, or locations" /></label><label class="filter-field"><span>Category</span><select id="category-filter"><option value="all">All categories</option></select></label><label class="filter-field"><span>Status</span><select id="status-filter"><option value="all">All statuses</option><option>Available</option><option>In use</option><option>Maintenance</option></select></label></section>
+    <p class="catalog-message" id="catalog-message" role="status" aria-live="polite">Loading instruments…</p>
+    <section class="instrument-grid" id="instrument-grid" aria-label="Laboratory instruments"></section>
+    <p class="dashboard-foot">Signed in as <strong id="user-email"></strong></p>
+  </main>
+  <script src="/dashboard.js" defer></script>
+</body>
+</html>

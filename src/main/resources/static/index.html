@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f6f5f0" />
+    <meta name="description" content="Sign in or create your Lab Resource Platform account." />
+    <title>Welcome | Lab Resource Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="visual" aria-label="Lab Resource Platform introduction">
+        <a class="brand" href="/" aria-label="Lab Resource Platform home">
+          <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M12 4h8M14 4v9l-7.2 12.2A2 2 0 0 0 8.5 28h15a2 2 0 0 0 1.7-2.8L18 13V4"/><path d="M10 22h12M13 17h6"/></svg></span>
+          <span>Lab Resource<span class="brand-light"> Platform</span></span>
+        </a>
+        <div class="visual-copy">
+          <div class="eyebrow"><span></span> YOUR LAB, IN SYNC</div>
+          <h1>Good science<br />starts with the<br /><em>right resources.</em></h1>
+          <p>Bring your lab resources, people, and plans together in one clear place.</p>
+        </div>
+        <div class="visual-bottom">
+          <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+          <div class="lab-card"><div class="lab-card-head"><span class="lab-icon">✳</span><span class="lab-card-title">Resource overview</span><span class="live"><i></i> LIVE</span></div>
+            <div class="lab-rows"><div class="lab-row"><span class="resource-dot dot-lime"></span><span>Cell culture suite</span><span class="row-status">Available</span></div><div class="lab-row"><span class="resource-dot dot-orange"></span><span>Confocal microscope</span><span class="row-status booked">In use</span></div><div class="lab-row"><span class="resource-dot dot-blue"></span><span>Cold storage · Unit B</span><span class="row-status">Available</span></div></div>
+            <div class="card-footer"><span>Today, 9:41 AM</span><span>View all resources <b>↗</b></span></div>
+          </div>
+          <div class="note-card"><span class="note-icon">✓</span><span>Everything in<br />its right place.</span></div>
+          <span class="spark spark-a">✳</span><span class="spark spark-b">✳</span>
+          <div class="visual-credits">A calmer way to manage your lab <span>© 2026</span></div>
+        </div>
+      </section>
+
+      <section class="auth-panel">
+        <div class="auth-top"><span class="secure"><svg viewBox="0 0 20 20"><rect x="4" y="8" width="12" height="9" rx="2"/><path d="M6.5 8V6a3.5 3.5 0 0 1 7 0v2"/></svg> SECURE ACCESS</span><span class="help"><a href="/admin.html">Admin login</a> · Need a hand? <a href="mailto:support@labresource.local">Get support</a></span></div>
+        <div class="auth-content">
+          <div class="auth-heading"><div class="welcome-badge">✳ &nbsp; LAB RESOURCE PLATFORM</div><h2 id="heading">Welcome back</h2><p id="subheading">Sign in to pick up where your lab left off.</p></div>
+          <div class="tabs" role="tablist" aria-label="Account access"><button class="tab active" id="login-tab" role="tab" aria-selected="true" type="button">Sign in</button><button class="tab" id="register-tab" role="tab" aria-selected="false" type="button">Create account</button></div>
+          <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+          <form id="auth-form" novalidate>
+            <div class="field" id="name-field" hidden><label for="name">Your name</label><div class="input-wrap"><span class="input-icon"><svg viewBox="0 0 20 20"><circle cx="10" cy="6.5" r="3"/><path d="M4 17c.4-3 2.4-4.5 6-4.5s5.6 1.5 6 4.5"/></svg></span><input id="name" name="name" autocomplete="name" placeholder="e.g. Alex Morgan" minlength="2" maxlength="80" /></div><span class="field-error" id="name-error"></span></div>
+            <div class="field"><label for="email">Work email</label><div class="input-wrap"><span class="input-icon"><svg viewBox="0 0 20 20"><rect x="3" y="4.5" width="14" height="11" rx="2"/><path d="m4 6 6 4.5L16 6"/></svg></span><input id="email" name="email" type="email" autocomplete="email" placeholder="you@lab.org" required /></div><span class="field-error" id="email-error"></span></div>
+            <div class="field"><div class="label-row"><label for="password">Password</label><a class="forgot" href="#" id="forgot-link">Forgot password?</a></div><div class="input-wrap"><span class="input-icon"><svg viewBox="0 0 20 20"><rect x="3.5" y="8" width="13" height="9" rx="2"/><path d="M6 8V6a4 4 0 1 1 8 0v2m-4 3.5v2"/></svg></span><input id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" minlength="8" required /><button class="show-password" type="button" aria-label="Show password">Show</button></div><span class="field-error" id="password-error"></span></div>
+            <div class="field" id="confirm-field" hidden><label for="confirm-password">Confirm password</label><div class="input-wrap"><span class="input-icon"><svg viewBox="0 0 20 20"><rect x="3.5" y="8" width="13" height="9" rx="2"/><path d="M6 8V6a4 4 0 1 1 8 0v2"/></svg></span><input id="confirm-password" type="password" autocomplete="new-password" placeholder="Re-enter your password" /></div><span class="field-error" id="confirm-error"></span></div>
+            <label class="remember" id="remember-row"><input type="checkbox" id="remember" /><span class="checkmark"></span><span>Keep me signed in</span></label>
+            <button class="submit-button" id="submit-button" type="submit"><span id="submit-label">Sign in to your workspace</span><span class="button-arrow">→</span></button>
+          </form>
+          <p class="legal" id="legal-copy">By continuing, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</p>
+          <div class="switch-copy" id="switch-copy">New to the platform? <button type="button" data-mode="register">Create an account</button></div>
+        </div>
+        <div class="auth-footer"><span>Made for people who make discoveries.</span><span class="footer-mark">LAB RESOURCE <b>·</b> 2026</span></div>
+      </section>
+    </main>
+    <script src="/app.js" defer></script>
+  </body>
+</html>

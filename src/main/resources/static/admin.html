@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#315b47" />
+  <title>Admin dashboard | Lab Resource Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/workspace.css" />
+  <style>[hidden]{display:none!important}.admin-key-row input{height:42px;border:1px solid #e2e7e2;border-radius:6px;padding:0 12px;min-width:0;flex:1;font:11px 'DM Sans',sans-serif}</style>
+</head>
+<body class="workspace-page">
+  <header class="workspace-nav"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M12 4h8M14 4v9l-7.2 12.2A2 2 0 0 0 8.5 28h15a2 2 0 0 0 1.7-2.8L18 13V4"/><path d="M10 22h12M13 17h6"/></svg></span><span>Lab Resource<span class="brand-light"> Platform</span></span></a><div><button class="outline-button" id="admin-logout" type="button" hidden>Admin sign out</button> <a class="outline-button" href="/">Sign in</a></div></header>
+  <main class="admin-wrap">
+    <div class="dashboard-kicker"><span></span> ADMINISTRATION</div>
+    <h1>Admin dashboard</h1>
+    <p class="dashboard-intro">Review access requests and browse the lab equipment catalog.</p>
+    <section class="admin-panel" id="admin-login-panel">
+      <label for="admin-email">Administrator email</label>
+      <div class="admin-key-row"><input id="admin-email" type="email" autocomplete="username" placeholder="admin@example.com" /><input id="admin-password" type="password" autocomplete="current-password" placeholder="Admin password" /><button id="admin-login" class="primary-link" type="button">Sign in</button></div>
+      <p id="admin-message" class="admin-message" role="status" aria-live="polite">Sign in with the admin email and password configured when starting the app.</p>
+    </section>
+    <section id="admin-content" hidden>
+      <section class="admin-panel">
+        <div class="resource-summary"><div><span class="summary-number" id="admin-instrument-count">—</span><span class="summary-label">EQUIPMENT ITEMS</span></div><button id="load-requests" class="primary-link" type="button">Refresh data</button></div>
+        <p id="dashboard-message" class="admin-message" role="status" aria-live="polite">Loading dashboard...</p>
+      </section>
+      <h2 class="admin-section-title">Pending access requests</h2>
+      <section id="request-list" class="request-list" aria-live="polite"></section>
+      <h2 class="admin-section-title">Laboratory equipment</h2>
+      <section class="instrument-grid" id="admin-instrument-grid" aria-label="Laboratory equipment catalog"></section>
+    </section>
+  </main>
+  <script src="/admin.js" defer></script>
+</body>
+</html>

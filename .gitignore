@@ -1,0 +1,22 @@
+# Build output and locally downloaded Maven distribution
+/target/
+/apache-maven-*/
+/.mvn/
+
+# Local database and user data
+*.sqlite
+*.sqlite3
+*.db
+
+# Local logs and configuration secrets
+run-error.txt
+*.log
+.env
+.env.*
+!.env.example
+
+# IDE and OS files
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
