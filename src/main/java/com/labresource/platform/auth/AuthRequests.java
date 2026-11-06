@@ -7,6 +7,8 @@ public final class AuthRequests {
         private String name;
         private String email;
         private String password;
+        private Long institutionId;
+        private String role;
 
         public Register() { }
         public String getName() { return name; }
@@ -15,6 +17,10 @@ public final class AuthRequests {
         public void setEmail(String email) { this.email = email; }
         public String getPassword() { return password; }
         public void setPassword(String password) { this.password = password; }
+        public Long getInstitutionId() { return institutionId; }
+        public void setInstitutionId(Long institutionId) { this.institutionId = institutionId; }
+        public String getRole() { return role; }
+        public void setRole(String role) { this.role = role; }
     }
 
     public static final class Login {
@@ -73,3 +79,4 @@ public final class AuthRequests {
         public void setError(String error) { this.error = error; }
     }
 }
+

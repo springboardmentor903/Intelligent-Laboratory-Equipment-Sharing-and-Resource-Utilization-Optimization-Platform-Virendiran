@@ -8,6 +8,8 @@ const loadButton = document.querySelector('#load-requests');
 const loginMessage = document.querySelector('#admin-message');
 const dashboardMessage = document.querySelector('#dashboard-message');
 const requestList = document.querySelector('#request-list');
+const bookingRequestList = document.querySelector('#booking-request-list');
+const activeBookingList = document.querySelector('#active-booking-list');
 const equipmentGrid = document.querySelector('#admin-instrument-grid');
 
 function setMessage(text, error = false) {
@@ -57,6 +59,64 @@ function renderRequests(requests) {
   }
 }
 
+function emptyRow(text) {
+  const empty = document.createElement('p');
+  empty.className = 'catalog-message';
+  empty.textContent = text;
+  return empty;
+}
+
+function localTime(value) { return window.formatLabTime(value); }
+
+function renderBookingApprovals(bookings) {
+  bookingRequestList.replaceChildren();
+  if (!bookings.length) { bookingRequestList.append(emptyRow('No pending booking approvals.')); return; }
+  for (const booking of bookings) {
+    const row = document.createElement('article'); row.className = 'request-card';
+    const details = document.createElement('div');
+    const equipment = document.createElement('strong'); equipment.textContent = booking.equipmentName;
+    const student = document.createElement('span'); student.textContent = `Student: ${booking.userName} · ${booking.userEmail}`;
+    const time = document.createElement('span'); time.textContent = `${localTime(booking.startTime)} – ${localTime(booking.endTime)}`;
+    const purpose = document.createElement('small'); purpose.textContent = `Purpose: ${booking.purpose}`;
+    details.append(equipment, student, time, purpose);
+    const actions = document.createElement('div'); actions.className = 'admin-booking-actions';
+    const approve = document.createElement('button'); approve.type = 'button'; approve.className = 'approve-button'; approve.textContent = 'Approve';
+    approve.addEventListener('click', () => decideBooking(booking.id, 'approve', approve));
+    const reject = document.createElement('button'); reject.type = 'button'; reject.className = 'reject-button'; reject.textContent = 'Reject';
+    reject.addEventListener('click', () => decideBooking(booking.id, 'reject', reject));
+    actions.append(approve, reject); row.append(details, actions); bookingRequestList.append(row);
+  }
+}
+
+function renderCurrentUse(bookings) {
+  activeBookingList.replaceChildren();
+  if (!bookings.length) { activeBookingList.append(emptyRow('No equipment has an active booking right now.')); return; }
+  for (const booking of bookings) {
+    const row = document.createElement('article'); row.className = 'request-card';
+    const details = document.createElement('div');
+    const equipment = document.createElement('strong'); equipment.textContent = `${booking.equipmentName} · In use`;
+    const student = document.createElement('span'); student.textContent = `Student: ${booking.userName} · ${booking.userEmail}`;
+    const time = document.createElement('span'); time.textContent = `${localTime(booking.startTime)} – ${localTime(booking.endTime)}`;
+    const purpose = document.createElement('small'); purpose.textContent = `Purpose: ${booking.purpose}`;
+    details.append(equipment, student, time, purpose); row.append(details); activeBookingList.append(row);
+  }
+}
+
+async function decideBooking(id, decision, button) {
+  const reason = decision === 'reject' ? window.prompt('Reason for rejecting this booking:') : null;
+  if (decision === 'reject' && !reason?.trim()) return;
+  button.disabled = true;
+  try {
+    const response = await fetch(`/api/bookings/${id}/${decision}`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      ...(decision === 'reject' ? { body: JSON.stringify({ reason: reason.trim() }) } : {})
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(result.error || `Could not ${decision} booking.`);
+    await loadDashboard(decision === 'approve' ? 'Booking approved.' : 'Booking rejected.');
+  } catch (error) { button.disabled = false; setMessage(error.message, true); }
+}
+
 function renderEquipment(items) {
   equipmentGrid.replaceChildren();
   document.querySelector('#admin-instrument-count').textContent = items.length;
@@ -93,16 +153,24 @@ function renderEquipment(items) {
 async function loadDashboard(successMessage) {
   setMessage('Loading equipment and approval requests...');
   try {
-    const [requestsResponse, equipmentResponse] = await Promise.all([
+    const [requestsResponse, equipmentResponse, bookingsResponse, activeResponse] = await Promise.all([
       fetch('/api/admin/pending'),
-      fetch('/api/instruments')
+      fetch('/api/instruments'),
+      fetch('/api/admin/bookings/pending'),
+      fetch('/api/admin/bookings/current-use')
     ]);
-    const [requests, equipment] = await Promise.all([requestsResponse.json(), equipmentResponse.json()]);
+    const [requests, equipment, bookings, activeBookings] = await Promise.all([
+      requestsResponse.json(), equipmentResponse.json(), bookingsResponse.json(), activeResponse.json()
+    ]);
     if (!requestsResponse.ok) throw new Error(requests.error || 'Could not load pending requests.');
     if (!equipmentResponse.ok) throw new Error(equipment.error || 'Could not load equipment catalog.');
+    if (!bookingsResponse.ok) throw new Error(bookings.error || 'Could not load booking approvals.');
+    if (!activeResponse.ok) throw new Error(activeBookings.error || 'Could not load current equipment use.');
     renderRequests(requests);
     renderEquipment(equipment);
-    setMessage(successMessage || `${requests.length} pending request${requests.length === 1 ? '' : 's'} · ${equipment.length} equipment items in the catalog.`);
+    renderBookingApprovals(bookings);
+    renderCurrentUse(activeBookings);
+    setMessage(successMessage || `${requests.length} pending access request${requests.length === 1 ? '' : 's'} · ${bookings.length} booking approval${bookings.length === 1 ? '' : 's'} · ${equipment.length} equipment items.`);
   } catch (error) { setMessage(error.message, true); }
 }
 
@@ -134,6 +202,8 @@ loadButton.addEventListener('click', () => loadDashboard());
 logoutButton.addEventListener('click', async () => {
   await fetch('/api/admin/logout', { method: 'POST' });
   requestList.replaceChildren();
+  bookingRequestList.replaceChildren();
+  activeBookingList.replaceChildren();
   equipmentGrid.replaceChildren();
   adminContent.hidden = true;
   loginPanel.hidden = false;

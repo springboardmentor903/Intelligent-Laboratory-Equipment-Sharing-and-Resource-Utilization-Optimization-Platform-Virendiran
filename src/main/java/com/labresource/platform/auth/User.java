@@ -1,3 +1,3 @@
 package com.labresource.platform.auth;
 
-public record User(long id, String name, String email) { }
+public record User(long id, String name, String email, Long institutionId, String institutionName, String role) { }

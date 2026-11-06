@@ -38,23 +38,55 @@ function renderInstruments() {
     locationText.textContent = item.location;
     location.append(locationText);
     card.append(top, name, description, location);
+    if (item.status.toLowerCase() === 'available') {
+      const book = document.createElement('a');
+      book.className = 'book-equipment-link';
+      book.href = `/bookings.html?equipmentId=${encodeURIComponent(item.id)}`;
+      book.textContent = 'Book this equipment';
+      card.append(book);
+    }
     grid.append(card);
   }
 }
 
 async function loadInstruments() {
-  const response = await fetch('/api/instruments');
-  if (response.status === 401) { window.location.replace('/'); return; }
-  if (!response.ok) throw new Error('Could not load the instrument catalog. Check the application terminal for database details.');
-  instruments = await response.json();
+  const cacheKey = 'labresource.instrument-catalog.v1';
+  let hasCachedCatalog = false;
+  try {
+    const cached = JSON.parse(sessionStorage.getItem(cacheKey) || 'null');
+    if (Array.isArray(cached) && cached.length) {
+      instruments = cached;
+      hasCachedCatalog = true;
+      renderCatalog();
+      document.querySelector('#catalog-message').textContent = 'Showing the last loaded catalog while checking for updates…';
+    }
+  } catch { /* Ignore an unavailable or invalid browser cache. */ }
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
+  try {
+    const response = await fetch('/api/instruments', { signal: controller.signal });
+    if (response.status === 401) { window.location.replace('/'); return; }
+    if (!response.ok) throw new Error(`Catalog request failed (${response.status}).`);
+    instruments = await response.json();
+    try { sessionStorage.setItem(cacheKey, JSON.stringify(instruments)); } catch { /* Cache is optional. */ }
+    renderCatalog();
+  } catch (error) {
+    if (!hasCachedCatalog) throw new Error(error.name === 'AbortError'
+      ? 'The catalog request timed out. Check that PostgreSQL is running, then reload.'
+      : 'Could not load the instrument catalog. Check that PostgreSQL is running, then reload.');
+    document.querySelector('#catalog-message').textContent = 'Showing the last loaded catalog. The latest catalog could not be reached.';
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function renderCatalog() {
   document.querySelector('#instrument-count').textContent = instruments.length;
-  const categories = [...new Set(instruments.map(item => item.category))].sort();
   const select = document.querySelector('#category-filter');
-  for (const category of categories) {
-    const option = document.createElement('option');
-    option.value = category;
-    option.textContent = category;
-    select.append(option);
+  select.replaceChildren(new Option('All categories', 'all'));
+  for (const category of [...new Set(instruments.map(item => item.category))].sort()) {
+    select.append(new Option(category, category));
   }
   renderInstruments();
 }
@@ -63,24 +95,22 @@ document.querySelector('#instrument-search').addEventListener('input', renderIns
 document.querySelector('#category-filter').addEventListener('change', renderInstruments);
 document.querySelector('#status-filter').addEventListener('change', renderInstruments);
 
-fetch('/api/auth/me')
-  .then(async response => {
-    if (!response.ok) { window.location.replace('/'); return null; }
-    return response.json();
-  })
-  .then(data => {
-    if (!data) return;
+async function initializeDashboard() {
+  try {
+    const response = await fetch('/api/auth/me');
+    if (response.status === 401) { window.location.replace('/'); return; }
+    if (!response.ok) throw new Error('Could not verify your sign-in. Reload the page to try again.');
+    const data = await response.json();
     document.querySelector('#user-name').textContent = data.user.name.split(' ')[0];
     document.querySelector('#nav-user').textContent = data.user.name;
     document.querySelector('#user-email').textContent = data.user.email;
-  })
-  .then(data => {
-    if (data) return loadInstruments();
-    return null;
-  })
-  .catch(error => {
+    await loadInstruments();
+  } catch (error) {
     document.querySelector('#catalog-message').textContent = error.message || 'Could not load dashboard data.';
-  });
+  }
+}
+
+initializeDashboard();
 
 document.querySelector('#logout').addEventListener('click', async () => {
   await fetch('/api/auth/logout', { method: 'POST' });

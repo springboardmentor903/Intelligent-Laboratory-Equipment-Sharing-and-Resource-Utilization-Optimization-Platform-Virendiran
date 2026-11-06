@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Live equipment status | Lab Resource Platform</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/workspace.css" />
+  <link rel="stylesheet" href="/monitoring.css" />
+</head>
+<body class="workspace-page">
+  <header class="workspace-nav">
+    <a class="brand" href="/dashboard.html">Lab Resource Platform</a>
+    <div class="nav-right"><a class="nav-admin" href="/dashboard.html">Equipment</a><a class="nav-admin" href="/bookings.html">My bookings</a><span class="nav-user" id="monitor-user"></span><button class="outline-button" id="monitor-logout">Sign out</button></div>
+  </header>
+  <main class="dashboard-wrap monitoring-wrap">
+    <div class="dashboard-kicker"><span></span> LIVE EQUIPMENT STATUS</div>
+    <h1>Equipment monitoring</h1>
+    <p class="dashboard-intro">Current equipment state, active usage, and the next confirmed booking.</p>
+    <section class="booking-panel">
+      <div class="monitor-toolbar">
+        <label class="filter-field"><span>Status</span><select id="monitor-status"><option value="">All equipment</option><option value="AVAILABLE">Available</option><option value="BOOKED">Booked</option><option value="UNDER_MAINTENANCE">Under maintenance</option><option value="OUT_OF_SERVICE">Out of service</option><option value="RETIRED">Retired</option></select></label>
+        <button class="calendar-button" id="monitor-refresh">Refresh status</button>
+      </div>
+      <p class="socket-state" id="socket-state" role="status">Connecting to live updates…</p>
+      <div id="monitor-message" class="monitor-message" role="status" aria-live="polite">Loading equipment status…</div>
+      <div id="equipment-status-list" class="equipment-status-list"></div>
+      <div class="pagination"><button class="calendar-button" id="monitor-previous">Previous</button><span id="monitor-page"></span><button class="calendar-button" id="monitor-next">Next</button></div>
+    </section>
+    <section class="utilization-placeholder"><strong>Utilization rate</strong><span>Placeholder — utilization calculations will be available in a later update.</span></section>
+  </main>
+  <script src="/shared-ui.js?v=1" defer></script>
+  <script src="/monitoring.js?v=1" defer></script>
+</body>
+</html>

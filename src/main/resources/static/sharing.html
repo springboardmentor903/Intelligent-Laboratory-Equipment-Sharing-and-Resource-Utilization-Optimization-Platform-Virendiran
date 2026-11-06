@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shared resources | Lab Resource Platform</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/workspace.css" />
+  <link rel="stylesheet" href="/sharing.css" />
+</head>
+<body class="workspace-page">
+  <header class="workspace-nav">
+    <a class="brand" href="/dashboard.html">Lab Resource Platform</a>
+    <nav class="share-nav"><a href="/dashboard.html">Equipment</a><a href="/bookings.html">Bookings</a><a class="active" href="/sharing.html">Shared resources</a><span id="share-user"></span><button class="outline-button" id="share-logout">Sign out</button></nav>
+  </header>
+  <main class="dashboard-wrap sharing-wrap">
+    <div class="dashboard-kicker"><span></span> INTER-INSTITUTION SHARING</div>
+    <h1>Shared resources</h1>
+    <p class="dashboard-intro">Discover equipment offered by partner institutions, request access, and manage agreements.</p>
+    <nav class="sharing-tabs" aria-label="Sharing pages">
+      <a href="#discover" data-tab="discover">Discover equipment</a><a href="#requests" data-tab="requests">Access requests</a><a href="#agreements" data-tab="agreements">Agreements &amp; my access</a><a href="#schedule" data-tab="schedule">Shared schedule</a><a href="#manage" data-tab="manage">Share equipment</a>
+    </nav>
+    <p id="share-message" class="share-message" role="status" aria-live="polite"></p>
+
+    <section class="sharing-pane" id="pane-discover">
+      <div class="share-filters"><label>Search<input id="share-search" type="search" placeholder="Equipment, asset tag, or terms" /></label><label>Owner institution<select id="share-institution"><option value="">All institutions</option></select></label><label>Category<select id="share-category"><option value="">All categories</option></select></label></div>
+      <p id="listing-count" class="catalog-message" aria-live="polite"></p><section id="listing-grid" class="share-grid" aria-label="Shared equipment listings"></section>
+      <div class="pagination"><button class="calendar-button" id="list-prev">Previous</button><span id="list-page"></span><button class="calendar-button" id="list-next">Next</button></div>
+    </section>
+
+    <section class="sharing-pane" id="pane-requests" hidden>
+      <div class="share-toolbar"><label>Request list<select id="request-view"><option value="mine">My requests</option><option value="department" hidden>Department requests</option><option value="outgoing" hidden>Outgoing requests</option><option value="incoming" hidden>Incoming requests</option></select></label><label>Status<select id="request-status"><option value="">All statuses</option><option>PENDING</option><option>FORWARDED</option><option>APPROVED</option><option>REJECTED</option><option>WITHDRAWN</option></select></label><button class="primary-link" id="reload-requests" type="button">Refresh requests</button></div>
+      <section id="requests-list" class="request-list" aria-live="polite"></section>
+      <div class="pagination"><button class="calendar-button" id="request-prev">Previous</button><span id="request-page"></span><button class="calendar-button" id="request-next">Next</button></div>
+    </section>
+
+    <section class="sharing-pane" id="pane-agreements" hidden>
+      <div class="share-toolbar"><label>Usage fee period from <input id="fee-from" type="date" /></label><label>to <input id="fee-to" type="date" /></label><button class="primary-link" id="reload-agreements" type="button">Refresh agreements</button></div>
+      <section id="agreements-list" class="agreement-list" aria-live="polite"></section>
+    </section>
+
+    <section class="sharing-pane" id="pane-schedule" hidden>
+      <div class="share-toolbar"><label>Equipment<select id="schedule-equipment"></select></label><label>View<select id="schedule-view"><option value="week">Week</option><option value="day">Day</option></select></label><label>From<input id="schedule-from" type="date" /></label><label>Through<input id="schedule-to" type="date" /></label><button class="primary-link" id="load-schedule" type="button">Load schedule</button></div>
+      <div id="schedule-progress" class="share-progress" hidden><div class="share-progress-label"><span id="share-progress-text"></span><strong id="share-progress-amount"></strong></div><div class="share-progress-track"><span id="share-progress-fill"></span></div></div>
+      <div class="calendar-legend share-legend"><span><i class="internal-slot"></i>Internal</span><span><i class="external-slot"></i>External</span></div>
+      <section id="schedule-slots" class="schedule-list" aria-live="polite"></section>
+    </section>
+
+    <section class="sharing-pane" id="pane-manage" hidden>
+      <section id="system-provisioning" class="booking-panel" hidden>
+        <h2>System administration setup</h2>
+        <p class="catalog-message">Create institutions, assign user roles, and mark equipment as owned and shareable.</p>
+        <form id="institution-form" class="share-form"><label class="terms-field">New institution name<input id="new-institution-name" maxlength="160" required /></label><button class="primary-link" type="submit">Create institution</button></form>
+        <form id="affiliation-form" class="share-form"><label>User account<select id="affiliation-user-id" required></select></label><label>Institution<select id="affiliation-institution" required></select></label><label>Role<select id="affiliation-role"><option>RESEARCHER</option><option>STUDENT</option><option>DEPARTMENT_HEAD</option><option>LAB_MANAGER</option><option>INSTITUTION_ADMIN</option></select></label><button class="primary-link" type="submit">Assign role</button></form>
+        <form id="equipment-owner-form" class="share-form"><label>Equipment<select id="owner-equipment"></select></label><label>Owner institution<select id="owner-institution" required></select></label><label class="active-toggle"><input id="owner-shareable" type="checkbox" /> Shareable</label><button class="primary-link" type="submit">Assign equipment</button></form>
+      </section>
+      <section class="booking-panel">
+        <h2>Share this equipment</h2>
+        <p class="catalog-message">Available to the equipment owner's Institution Administrator and System Administrator.</p>
+        <div class="share-toolbar"><label>Equipment<select id="manage-equipment"></select></label><button class="calendar-button" id="load-listing" type="button">Load current listing</button></div>
+        <form id="listing-form" class="share-form">
+          <label>Fee per hour<input id="listing-fee" type="number" min="0" step="0.01" required /></label>
+          <label>External weekly share (%)<input id="listing-share" type="number" min="0" max="100" step="0.01" required /></label>
+          <label>Minimum notice hours<input id="listing-notice" type="number" min="0" required /></label>
+          <label>Maximum booking hours<input id="listing-max" type="number" min="1" max="168" required /></label>
+          <label class="terms-field">Sharing terms<textarea id="listing-terms" maxlength="2000" rows="4" required></textarea></label>
+          <label class="active-toggle"><input id="listing-active" type="checkbox" checked /> Active listing</label>
+          <button class="primary-link" type="submit">Save listing</button>
+        </form>
+      </section>
+    </section>
+  </main>
+
+  <dialog id="access-dialog" class="booking-dialog">
+    <button class="dialog-close" id="close-access" aria-label="Close">×</button><h2>Request equipment access</h2><p id="dialog-equipment" class="catalog-message"></p>
+    <form id="access-form" class="share-form"><input id="request-equipment-id" type="hidden" /><label>Purpose<textarea id="request-purpose" maxlength="500" rows="4" required></textarea></label><label>Start date<input id="request-start" type="date" required /></label><label>End date<input id="request-end" type="date" required /></label><button class="primary-link" type="submit">Submit access request</button></form>
+  </dialog>
+  <script src="/shared-ui.js?v=1" defer></script>
+  <script src="/sharing.js?v=1" defer></script>
+</body>
+</html>

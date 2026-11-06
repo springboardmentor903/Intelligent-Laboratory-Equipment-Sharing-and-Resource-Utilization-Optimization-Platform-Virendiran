@@ -11,13 +11,15 @@
   <link rel="stylesheet" href="/styles.css" />
   <link rel="stylesheet" href="/workspace.css" />
   <style>[hidden]{display:none!important}.admin-key-row input{height:42px;border:1px solid #e2e7e2;border-radius:6px;padding:0 12px;min-width:0;flex:1;font:11px 'DM Sans',sans-serif}</style>
+  <style>.admin-booking-actions{display:flex;gap:8px}.reject-button{border:1px solid #ead9d6;border-radius:6px;background:#fff;color:#a64f47;padding:9px 12px;font:600 10px 'DM Sans',sans-serif;cursor:pointer}.reject-button:disabled,.admin-booking-actions .approve-button:disabled{opacity:.6;cursor:wait}</style>
 </head>
 <body class="workspace-page">
-  <header class="workspace-nav"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M12 4h8M14 4v9l-7.2 12.2A2 2 0 0 0 8.5 28h15a2 2 0 0 0 1.7-2.8L18 13V4"/><path d="M10 22h12M13 17h6"/></svg></span><span>Lab Resource<span class="brand-light"> Platform</span></span></a><div><button class="outline-button" id="admin-logout" type="button" hidden>Admin sign out</button> <a class="outline-button" href="/">Sign in</a></div></header>
+  <header class="workspace-nav"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M12 4h8M14 4v9l-7.2 12.2A2 2 0 0 0 8.5 28h15a2 2 0 0 0 1.7-2.8L18 13V4"/><path d="M10 22h12M13 17h6"/></svg></span><span>Lab Resource<span class="brand-light"> Platform</span></span></a><div><a class="outline-button" href="/monitoring.html">Live equipment status</a> <button class="outline-button" id="admin-logout" type="button" hidden>Admin sign out</button> <a class="outline-button" href="/">Sign in</a></div></header>
   <main class="admin-wrap">
     <div class="dashboard-kicker"><span></span> ADMINISTRATION</div>
     <h1>Admin dashboard</h1>
     <p class="dashboard-intro">Review access requests and browse the lab equipment catalog.</p>
+    <p><a class="nav-admin" href="/sharing.html">Open sharing and agreement management</a></p>
     <section class="admin-panel" id="admin-login-panel">
       <label for="admin-email">Administrator email</label>
       <div class="admin-key-row"><input id="admin-email" type="email" autocomplete="username" placeholder="admin@example.com" /><input id="admin-password" type="password" autocomplete="current-password" placeholder="Admin password" /><button id="admin-login" class="primary-link" type="button">Sign in</button></div>
@@ -30,10 +32,17 @@
       </section>
       <h2 class="admin-section-title">Pending access requests</h2>
       <section id="request-list" class="request-list" aria-live="polite"></section>
+      <h2 class="admin-section-title">Pending booking approvals</h2>
+      <p class="admin-message">Review the equipment, student, purpose, and requested time before approving.</p>
+      <section id="booking-request-list" class="request-list" aria-live="polite"></section>
+      <h2 class="admin-section-title">Equipment in use now</h2>
+      <p class="admin-message">Shows checked-in equipment usage and the student responsible for the active usage log.</p>
+      <section id="active-booking-list" class="request-list" aria-live="polite"></section>
       <h2 class="admin-section-title">Laboratory equipment</h2>
       <section class="instrument-grid" id="admin-instrument-grid" aria-label="Laboratory equipment catalog"></section>
     </section>
   </main>
-  <script src="/admin.js" defer></script>
+  <script src="/shared-ui.js?v=1" defer></script>
+  <script src="/admin.js?v=3" defer></script>
 </body>
 </html>

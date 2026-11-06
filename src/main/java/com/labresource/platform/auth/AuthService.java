@@ -25,13 +25,19 @@ public class AuthService {
         String name = request == null || request.getName() == null ? "" : request.getName().trim();
         String email = request == null || request.getEmail() == null ? "" : request.getEmail().trim().toLowerCase(Locale.ROOT);
         String password = request == null || request.getPassword() == null ? "" : request.getPassword();
+        Long institutionId = request == null ? null : request.getInstitutionId();
+        String role = request == null || request.getRole() == null || request.getRole().isBlank()
+            ? "RESEARCHER" : request.getRole().trim().toUpperCase(Locale.ROOT);
         if (name.length() < 2 || name.length() > 80) throw new AuthException(400, "Enter a name between 2 and 80 characters.");
         if (!EMAIL.matcher(email).matches() || email.length() > 254) throw new AuthException(400, "Enter a valid email address.");
         if (password.length() < 8 || password.length() > 128) throw new AuthException(400, "Password must be at least 8 characters.");
+        if (!java.util.Set.of("RESEARCHER", "STUDENT", "DEPARTMENT_HEAD").contains(role)) throw new AuthException(400, "Choose Researcher, Student, or Department Head.");
+        if (institutionId != null && (institutionId < 1 || !users.institutionExists(institutionId))) throw new AuthException(400, "Choose a valid institution.");
+        if ("DEPARTMENT_HEAD".equals(role) && institutionId == null) throw new AuthException(400, "A Department Head account must belong to an institution.");
         if (users.findByEmail(email).isPresent()) throw new AuthException(409, "An account with that email already exists.");
         String salt = passwordHasher.newSalt();
         try {
-            User created = users.insert(name, email, passwordHasher.hash(password, salt), salt);
+            User created = users.insert(name, email, passwordHasher.hash(password, salt), salt, institutionId, role);
             log.info("NEW_USER_DETECTED user_id={} name=\"{}\" email={} approval=PENDING database=PostgreSQL", created.id(), created.name(), created.email());
             return created;
         } catch (SQLException exception) {

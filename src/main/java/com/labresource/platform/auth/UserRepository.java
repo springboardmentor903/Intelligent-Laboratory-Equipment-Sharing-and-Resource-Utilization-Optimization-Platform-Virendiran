@@ -19,12 +19,12 @@ public class UserRepository {
     public Optional<StoredUser> findByEmail(String email) {
         try (Connection connection = database.open();
              PreparedStatement statement = connection.prepareStatement(
-                 "SELECT id, name, email, password_hash, password_salt, is_approved FROM users WHERE email = ?")) {
+                 "SELECT u.id,u.name,u.email,u.password_hash,u.password_salt,u.is_approved,u.institution_id,i.name AS institution_name,u.role FROM users u LEFT JOIN institutions i ON i.id=u.institution_id WHERE u.email = ?")) {
             statement.setString(1, email);
             try (ResultSet result = statement.executeQuery()) {
                 if (!result.next()) return Optional.empty();
                 return Optional.of(new StoredUser(
-                    new User(result.getLong("id"), result.getString("name"), result.getString("email")),
+                    mapUser(result),
                     result.getString("password_hash"), result.getString("password_salt"), result.getBoolean("is_approved")));
             }
         } catch (SQLException exception) {
@@ -32,19 +32,37 @@ public class UserRepository {
         }
     }
 
-    public User insert(String name, String email, String passwordHash, String salt) throws SQLException {
+    public User insert(String name, String email, String passwordHash, String salt, Long institutionId, String role) throws SQLException {
         try (Connection connection = database.open();
              PreparedStatement statement = connection.prepareStatement(
-                 "INSERT INTO users (name, email, password_hash, password_salt) VALUES (?, ?, ?, ?) RETURNING id")) {
+                 "INSERT INTO users (name, email, password_hash, password_salt, institution_id, role) VALUES (?, ?, ?, ?, ?, ?) RETURNING id")) {
             statement.setString(1, name);
             statement.setString(2, email);
             statement.setString(3, passwordHash);
             statement.setString(4, salt);
+            if (institutionId == null) statement.setNull(5, java.sql.Types.BIGINT); else statement.setLong(5, institutionId);
+            statement.setString(6, role);
             try (ResultSet result = statement.executeQuery()) {
                 if (!result.next()) throw new SQLException("PostgreSQL did not return the inserted user id.");
-                return new User(result.getLong(1), name, email);
+                return new User(result.getLong(1), name, email, institutionId, null, role);
             }
         }
+    }
+
+    public List<Institution> findInstitutions() {
+        try (Connection c=database.open(); PreparedStatement p=c.prepareStatement("SELECT id,name FROM institutions ORDER BY name"); ResultSet rs=p.executeQuery()) {
+            List<Institution> result=new ArrayList<>(); while(rs.next())result.add(new Institution(rs.getLong(1),rs.getString(2))); return result;
+        } catch(SQLException e) { throw new IllegalStateException("Could not load institutions.",e); }
+    }
+
+    public boolean institutionExists(long id) {
+        try(Connection c=database.open();PreparedStatement p=c.prepareStatement("SELECT 1 FROM institutions WHERE id=?")){p.setLong(1,id);try(ResultSet rs=p.executeQuery()){return rs.next();}}
+        catch(SQLException e){throw new IllegalStateException("Could not verify institution.",e);}
+    }
+
+    static User mapUser(ResultSet row) throws SQLException {
+        long institutionId=row.getLong("institution_id"); Long id=row.wasNull()?null:institutionId;
+        return new User(row.getLong("id"),row.getString("name"),row.getString("email"),id,row.getString("institution_name"),row.getString("role"));
     }
 
     public List<PendingUser> findPendingUsers() {

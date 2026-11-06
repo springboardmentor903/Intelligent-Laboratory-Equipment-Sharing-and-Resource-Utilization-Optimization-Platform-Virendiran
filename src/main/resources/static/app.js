@@ -4,6 +4,8 @@ const registerTab = document.querySelector('#register-tab');
 const notice = document.querySelector('#notice');
 const modeFields = {
   name: document.querySelector('#name-field'),
+  institution: document.querySelector('#institution-field'),
+  role: document.querySelector('#role-field'),
   confirm: document.querySelector('#confirm-field'),
   remember: document.querySelector('#remember-row'),
 };
@@ -17,6 +19,8 @@ function setMode(next) {
   loginTab.setAttribute('aria-selected', String(!registering));
   registerTab.setAttribute('aria-selected', String(registering));
   modeFields.name.hidden = !registering;
+  modeFields.institution.hidden = !registering;
+  modeFields.role.hidden = !registering;
   modeFields.confirm.hidden = !registering;
   modeFields.remember.hidden = registering;
   document.querySelector('#heading').textContent = registering ? 'Create your account' : 'Welcome back';
@@ -87,7 +91,9 @@ form.addEventListener('submit', async event => {
   try {
     const response = await fetch(`/api/auth/${mode === 'register' ? 'register' : 'login'}`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(mode === 'register' ? { name, email, password } : { email, password }),
+      body: JSON.stringify(mode === 'register' ? { name, email, password,
+        institutionId: document.querySelector('#institution-id').value || null,
+        role: document.querySelector('#account-role').value } : { email, password }),
     });
     const result = response.status === 204 ? {} : await response.json();
     if (!response.ok) throw new Error(result.error || 'Something went wrong. Please try again.');
@@ -109,4 +115,9 @@ form.addEventListener('submit', async event => {
 fetch('/api/auth/me').then(async response => {
   if (!response.ok) return;
   window.location.replace('/dashboard.html');
+}).catch(() => {});
+
+fetch('/api/institutions').then(response => response.ok ? response.json() : []).then(institutions => {
+  const select=document.querySelector('#institution-id');
+  for(const institution of institutions){const option=document.createElement('option');option.value=institution.id;option.textContent=institution.name;select.append(option);}
 }).catch(() => {});

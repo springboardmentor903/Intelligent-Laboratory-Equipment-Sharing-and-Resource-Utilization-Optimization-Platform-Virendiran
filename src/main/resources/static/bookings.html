@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bookings | Lab Resource Platform</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="stylesheet" href="/workspace.css" />
+  <link rel="stylesheet" href="/bookings.css" />
+</head>
+<body class="workspace-page">
+  <header class="workspace-nav">
+    <a class="brand" href="/dashboard.html">Lab Resource Platform</a>
+    <div class="nav-right"><a class="nav-admin" href="/dashboard.html">Equipment</a><a class="nav-admin" href="/monitoring.html">Equipment status</a><span class="nav-user" id="nav-user"></span><button class="outline-button" id="logout">Sign out</button></div>
+  </header>
+  <main class="dashboard-wrap booking-wrap">
+    <div class="dashboard-kicker"><span></span> EQUIPMENT SCHEDULING</div>
+    <h1>Bookings</h1>
+    <p class="dashboard-intro">Choose an available time, reserve equipment, and track your bookings.</p>
+    <section class="booking-panel shared-agreement-banner" id="agreement-banner" hidden></section>
+    <section class="booking-panel">
+      <div class="calendar-toolbar">
+        <div><button class="calendar-button" id="previous-range" aria-label="Previous dates">‹</button><button class="calendar-button" id="next-range" aria-label="Next dates">›</button><button class="calendar-button" id="today-range">Today</button><strong id="range-label"></strong></div>
+        <div><label class="filter-field equipment-picker"><span>Equipment</span><select id="equipment-select"></select></label><select id="view-select" aria-label="Calendar view"><option value="week">Week</option><option value="day">Day</option></select></div>
+      </div>
+      <p class="booking-message" id="calendar-message" role="status"></p>
+      <div class="calendar-scroll"><div id="calendar" class="calendar-grid" role="grid"></div></div>
+      <div class="calendar-legend"><span><i class="pending"></i>Pending approval</span><span><i class="confirmed"></i>Confirmed</span><span><i class="inuse"></i>In use</span></div>
+    </section>
+    <section class="booking-panel booking-form-panel">
+      <div class="section-heading"><h2>Request a booking</h2><span id="selected-equipment-label"></span></div>
+      <form id="booking-form" class="booking-form">
+        <label>Start time<input id="booking-start" type="datetime-local" required /></label>
+        <label>End time<input id="booking-end" type="datetime-local" required /></label>
+        <label class="purpose-field">Purpose<textarea id="booking-purpose" maxlength="1000" rows="2" required placeholder="What will you use this equipment for?"></textarea></label>
+        <button class="primary-link" id="booking-submit" type="submit">Submit booking request</button>
+      </form>
+      <p class="booking-message" id="form-message" role="status" aria-live="polite"></p>
+    </section>
+    <section class="booking-panel">
+      <div class="section-heading"><h2>My bookings</h2><label class="filter-field"><span>Status</span><select id="status-select"><option value="">All statuses</option><option>PENDING_APPROVAL</option><option>CONFIRMED</option><option>IN_USE</option><option>COMPLETED</option><option>CANCELLED</option><option>NO_SHOW</option></select></label></div>
+      <div id="my-bookings" class="my-bookings" aria-live="polite"></div>
+      <div class="pagination"><button id="page-back" class="calendar-button">Previous</button><span id="page-label"></span><button id="page-forward" class="calendar-button">Next</button></div>
+    </section>
+    <dialog id="booking-details" class="booking-dialog"><button class="dialog-close" id="close-details" aria-label="Close">×</button><div id="details-content"></div></dialog>
+  </main>
+  <script src="/shared-ui.js?v=1" defer></script>
+  <script src="/bookings.js?v=2" defer></script>
+</body>
+</html>
